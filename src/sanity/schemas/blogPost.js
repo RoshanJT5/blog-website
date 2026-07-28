@@ -105,7 +105,8 @@ export default {
           type: 'block',
           styles: [
             { title: 'Normal', value: 'normal' },
-            { title: 'H4', value: 'h4' }
+            { title: 'H4', value: 'h4' },
+            { title: 'Blockquote', value: 'blockquote' }
           ],
           lists: [
             { title: 'Bullet', value: 'bullet' },
