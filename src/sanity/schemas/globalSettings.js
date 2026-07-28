@@ -2,7 +2,6 @@ export default {
   name: 'globalSettings',
   title: 'Global Settings',
   type: 'document',
-  // Make this a singleton document so only one instance can be created
   __experimental_actions: ['update', 'publish'], 
   fields: [
     {
@@ -26,6 +25,32 @@ export default {
       description: 'e.g. & Wayfare',
       initialValue: '&Wayfare',
       validation: Rule => Rule.required()
+    },
+    {
+      name: 'accentColor',
+      title: 'Main Accent Color',
+      type: 'string',
+      description: 'The primary accent color of the site in Hex format (e.g. #c98a4b)',
+      initialValue: '#c98a4b',
+      validation: Rule => Rule.regex(/^#[0-9A-Fa-f]{6}$/).error('Must be a valid Hex color code (e.g. #c98a4b)')
+    },
+    {
+      name: 'instagramUrl',
+      title: 'Instagram Profile Link',
+      type: 'url',
+      initialValue: 'https://instagram.com'
+    },
+    {
+      name: 'twitterUrl',
+      title: 'X (Twitter) Profile Link',
+      type: 'url',
+      initialValue: 'https://x.com'
+    },
+    {
+      name: 'pinterestUrl',
+      title: 'Pinterest Profile Link',
+      type: 'url',
+      initialValue: 'https://pinterest.com'
     },
     {
       name: 'footerDescription',

@@ -5,19 +5,26 @@ export default {
   fields: [
     {
       name: 'title',
-      title: 'Title',
+      title: 'Article Title',
       type: 'string',
       validation: Rule => Rule.required()
     },
     {
       name: 'slug',
-      title: 'Slug',
+      title: 'URL Slug',
       type: 'slug',
       options: {
         source: 'title',
         maxLength: 96
       },
       validation: Rule => Rule.required()
+    },
+    {
+      name: 'isFeatured',
+      title: 'Is Featured Story?',
+      type: 'boolean',
+      description: 'Mark this true to highlight the article at the top of the homepage slider.',
+      initialValue: false
     },
     {
       name: 'category',
@@ -34,16 +41,27 @@ export default {
       validation: Rule => Rule.required()
     },
     {
+      name: 'tags',
+      title: 'Tags / Keywords',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        layout: 'tags'
+      },
+      description: 'Add keywords to group articles or assist on search filters.'
+    },
+    {
       name: 'date',
       title: 'Publish Date',
       type: 'date',
+      initialValue: () => new Date().toISOString().split('T')[0],
       validation: Rule => Rule.required()
     },
     {
       name: 'readTime',
-      title: 'Read Time',
+      title: 'Read Time Description',
       type: 'string',
-      description: 'e.g., 5 min read',
+      description: 'e.g. 5 min read',
       validation: Rule => Rule.required()
     },
     {
@@ -59,37 +77,35 @@ export default {
       name: 'authorName',
       title: 'Author Name',
       type: 'string',
+      initialValue: 'Jane Doe',
       validation: Rule => Rule.required()
     },
     {
       name: 'authorInitials',
       title: 'Author Initials',
       type: 'string',
-      description: 'e.g., JD',
+      description: 'For avatar text display (e.g. JD)',
+      initialValue: 'JD',
       validation: Rule => Rule.required()
     },
     {
       name: 'snippet',
-      title: 'Short Snippet',
+      title: 'Excerpt Snippet',
       type: 'text',
       rows: 2,
-      description: 'Shown on the blog grid cards',
-      validation: Rule => Rule.max(160)
+      description: 'Used for search list cards preview and SEO description.',
+      validation: Rule => Rule.required()
     },
     {
       name: 'content',
-      title: 'Content',
+      title: 'Main Body Content',
       type: 'array',
       of: [
         {
           type: 'block',
           styles: [
             { title: 'Normal', value: 'normal' },
-            { title: 'H1', value: 'h1' },
-            { title: 'H2', value: 'h2' },
-            { title: 'H3', value: 'h3' },
-            { title: 'H4', value: 'h4' },
-            { title: 'Quote', value: 'blockquote' }
+            { title: 'H4', value: 'h4' }
           ],
           lists: [
             { title: 'Bullet', value: 'bullet' },
@@ -98,21 +114,18 @@ export default {
         }
       ],
       validation: Rule => Rule.required()
-    }
-  ],
-  preview: {
-    select: {
-      title: 'title',
-      author: 'authorName',
-      media: 'image'
     },
-    prepare(selection) {
-      const { title, author, media } = selection;
-      return {
-        title: title,
-        subtitle: `by ${author || 'Unknown'}`,
-        media: media
-      };
+    {
+      name: 'seoTitle',
+      title: 'SEO Title Override',
+      type: 'string',
+      description: 'Fine-tune search result title (defaults to Article Title).'
+    },
+    {
+      name: 'seoDescription',
+      title: 'SEO Meta Description Override',
+      type: 'string',
+      description: 'Fine-tune search result description (defaults to Excerpt Snippet).'
     }
-  }
+  ]
 };
