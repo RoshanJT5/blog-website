@@ -16,15 +16,105 @@ export default {
   fields: [
 
     // ─── Hero Slider ──────────────────────────────────────────────────────────
-    // The actual slides are managed as separate heroSlide documents.
-    // This field lets the client control the section heading label only.
+    // Slides are managed directly here — no need to visit a separate document.
+    // Each slide can link to an existing blog post via the linkedPost reference.
     {
       name: 'heroTagLine',
-      title: 'Hero Tag Line',
+      title: 'Default Slide Tag',
       type: 'string',
       group: 'hero',
-      description: 'Small label shown above each slide title (e.g. "Featured Story").',
+      description: 'Fallback tag shown when a slide has no individual tag set (e.g. "Featured Story").',
       initialValue: 'Featured Story'
+    },
+    {
+      name: 'heroSlides',
+      title: 'Hero Slides',
+      type: 'array',
+      group: 'hero',
+      description: 'Add, remove and reorder homepage hero slides. Each slide can link to a blog post.',
+      of: [
+        {
+          type: 'object',
+          name: 'inlineSlide',
+          title: 'Slide',
+          fields: [
+            {
+              name: 'tag',
+              title: 'Tag / Label',
+              type: 'string',
+              initialValue: 'Featured Story'
+            },
+            {
+              name: 'title',
+              title: 'Slide Title',
+              type: 'string',
+              validation: Rule => Rule.required()
+            },
+            {
+              name: 'description',
+              title: 'Slide Description',
+              type: 'text',
+              rows: 2
+            },
+            {
+              name: 'image',
+              title: 'Background Image',
+              type: 'image',
+              options: { hotspot: true }
+            },
+            {
+              name: 'buttonText',
+              title: 'Button Text',
+              type: 'string',
+              initialValue: 'Read Full Story'
+            },
+            {
+              name: 'linkedPost',
+              title: 'Linked Blog Post',
+              type: 'reference',
+              to: [{ type: 'blogPost' }],
+              description: 'Clicking the button takes the reader to this article.'
+            }
+          ],
+          preview: {
+            select: { title: 'title', subtitle: 'tag', media: 'image' },
+            prepare({ title, subtitle, media }) {
+              return { title: title || 'Untitled Slide', subtitle: subtitle || 'Featured Story', media };
+            }
+          }
+        }
+      ],
+      // ── The 4 original slides pre-filled so the client can edit immediately ──
+      initialValue: [
+        {
+          _type: 'inlineSlide',
+          tag: 'Featured Story',
+          title: 'Exploring the Wonders of the Desert Canyons',
+          description: 'A journey through sunlit cliffs, endless dunes and the quiet magic of golden hour in the American Southwest.',
+          buttonText: 'Read Full Story'
+        },
+        {
+          _type: 'inlineSlide',
+          tag: 'Featured Story',
+          title: 'Hidden Alpine Lakes Worth the Hike',
+          description: 'Beyond the crowded trailheads lie turquoise waters and silence you can only find above 2,000 meters.',
+          buttonText: 'Read Full Story'
+        },
+        {
+          _type: 'inlineSlide',
+          tag: 'Featured Story',
+          title: 'Street Food Trails of Southeast Asia',
+          description: 'From smoky night markets to family-run stalls passed down three generations, this is where the real flavor lives.',
+          buttonText: 'Read Full Story'
+        },
+        {
+          _type: 'inlineSlide',
+          tag: 'Featured Story',
+          title: "Coastal Cliffs You've Probably Never Heard Of",
+          description: 'Skip the postcard spots — these lesser-known coastlines deliver the same drama with none of the crowds.',
+          buttonText: 'Read Full Story'
+        }
+      ]
     },
 
     // ─── Latest Stories Section ───────────────────────────────────────────────
