@@ -1,40 +1,60 @@
 import { client } from '@/sanity/client';
 import BlogList from '@/components/BlogList';
-
-export const revalidate = 60; // Refresh cache at most once every 60 seconds (revalidated instantly on webhook publish)
-
-export const metadata = {
-  title: 'Blogs — Wander & Wayfare',
-  description: 'Stories from every corner of the map. Destinations, lifestyle notes, food trails and culture pieces.',
-};
-
-
 import { FALLBACK_BLOG_DATABASE } from '@/sanity/fallbackData';
+
+export const revalidate = 60;
 
 const FALLBACK_POSTS = Object.entries(FALLBACK_BLOG_DATABASE).map(([slug, data]) => ({
   slug,
-  ...data
+  ...data,
 }));
+
+// ─── Metadata — reads from siteSettings defaults if no page-specific SEO ──────
+export async function generateMetadata() {
+  try {
+    const settings = await client.fetch(
+      `*[_type == "siteSettings"][0]{ defaultMetaTitle, defaultMetaDescription }`
+    );
+    return {
+      title: 'Blogs — ' + (settings?.defaultMetaTitle?.replace(/ — .+/, '') || 'Wander & Wayfare'),
+      description: settings?.defaultMetaDescription
+        || 'Stories from every corner of the map. Destinations, lifestyle notes, food trails and culture pieces.',
+    };
+  } catch (_) {
+    return {
+      title: 'Blogs — Wander & Wayfare',
+      description: 'Stories from every corner of the map. Destinations, lifestyle notes, food trails and culture pieces.',
+    };
+  }
+}
 
 export default async function BlogPage() {
   let posts = [];
+
   try {
-    const fetchedPosts = await client.fetch(`*[_type == "blogPost"] | order(date desc) {
-      title,
-      "slug": slug.current,
-      category,
-      date,
-      readTime,
-      image,
-      authorName,
-      authorInitials,
-      snippet
-    }`);
-    if (fetchedPosts && fetchedPosts.length > 0) {
-      posts = fetchedPosts;
-    }
+    const fetched = await client.fetch(`
+      *[_type == "blogPost"] | order(date desc) {
+        title,
+        "slug": slug.current,
+        "category": select(
+          defined(categoryRef) => categoryRef->name,
+          category
+        ),
+        date, readTime, image,
+        "authorName": select(
+          defined(authorRef) => authorRef->name,
+          authorName
+        ),
+        "authorInitials": select(
+          defined(authorRef) => authorRef->initials,
+          authorInitials
+        ),
+        snippet
+      }
+    `);
+    if (fetched?.length > 0) posts = fetched;
   } catch (error) {
-    console.error('Failed to fetch blog posts from Sanity, using fallbacks:', error.message);
+    console.error('BlogPage: Sanity fetch failed, using fallbacks:', error.message);
   }
 
   const displayPosts = posts.length > 0 ? posts : FALLBACK_POSTS;
