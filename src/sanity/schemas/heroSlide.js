@@ -73,6 +73,13 @@ export default {
       validation: Rule => Rule.regex(/^#[0-9A-Fa-f]{6}$/).error('Must be a valid Hex color code')
     },
     {
+      name: 'buttonText',
+      title: 'Button Text',
+      type: 'string',
+      description: 'Text shown on the slide CTA button (e.g. "Read Full Story").',
+      initialValue: 'Read Full Story'
+    },
+    {
       name: 'linkedPost',
       title: 'Linked Blog Post',
       type: 'reference',
